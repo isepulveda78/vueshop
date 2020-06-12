@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <script src="https://js.stripe.com/v3/"></script>
+    <title>Poster Store</title>
+  </head>
+  <style>
+    .header {
+    padding: 75px 0 100px;
+    }
+    .fade-enter, .fade-leave-to{
+        opacity: 0;
+      }
+      .fade-enter-active, .fade-leave-active{
+        transition: all 0.3s ease-in-out;
+      }
+      [v-cloak] > * {
+          display: none;
+      }
+      [v-cloak] > #loading{
+          display: block;
+      }
+      #loading{
+          display: none;
+      }
+  </style>
+  <body>
+    <script src="https://www.paypal.com/sdk/js?client-id=ARVJvVy2d-8fNpzqtve1i359U7Anhzqiw0R9jzxMPlyKkgcBH9vAkfrhrCoLWU_xVfxXLx0DtqLhikNy"> // Replace YOUR_SB_CLIENT_ID with your sandbox client ID
+    </script>
+
+      <div id="app" v-cloak>
+          <div id="loading"><h1 class="text-center text-dark mt-5">Loading...</h1></div>
+        <div class="header bg-primary text-white">
+            <div class="container text-center">
+              <h1>Vue.js Poster Shop</h1>
+                <div class="col-md-6 offset-md-3 mt-3">
+                    <input type="text" class="form-control" v-model="search" placeholder="Meow...">
+                </div>
+            </div>
+        </div>
+      <div class="container" >
+        <div class="row">
+
+            <transition name="fade">
+                <div class="col-md-12 mt-2" v-if="cart.length > 0">
+                    <div class="card p-5">
+                        <h5>Shopping Cart</h5>
+                        <ul class="list-group" v-for="item in cart" :key="item.id" >
+                            <li class="list-group-item">{{ item.name }}
+                       
+                            <span>
+                                {{ item.price | currency  }} - {{ item.qty }}
+                                <a @click="dec(item)"  class="text-white badge badge-primary">-</a>
+                                <a @click="inc(item)" class="text-white badge badge-primary">+</a>
+                            </span></li>
+                           
+                          </ul>
+                        <hr/>
+                        <div v-if="cart.length"> {{ total | currency }}<!-- this is called an interperlation - rendering javascript on the page -->
+                            <div class="d-flex flex-column align-items-center mt-5">
+                                <h2 class="text-primary">{{msg}} {{total | currency}}</h2>
+                                <form id="payment-form" class="w-75 px-5 d-flex flex-column align-items-center" >
+                                    <div ref="card" class="form-control m-2">
+                                      
+                                    </div>
+                                    <input :disabled="lockSubmit" class="btn btn-primary shadow-sm" type="submit" value="Donate" v-on:click.prevent="purchase" />
+                                </form>
+                              </div>
+                        </div>
+                        <div v-else>No items in the cart.</div>
+                        <div class="d-flex flex-column align-items-center mt-3">
+                      
+                    </div>
+             
+                    </div>
+                </div>
+            </transition>
+
+            <div v-if="search" class="col-md-12">
+                Found {{ filterProducts.length }} of {{ search }}
+            </div>
+
+            <div class="col-md-12" v-if="loading">
+                <h1>Loading...</h1>
+            </div>
+           
+            <div class="col-md-4" v-for="product in displayedProducts" :key="product.id" v-else>
+                <div class="card p-5 mt-2">
+                    
+                    <img class="img-fluid d-block mx-auto" :src="product.image" :alt="product.name" style="width: 50%;">
+                    <h4 class="mt-5">{{ product.name }}</h4>
+                    <h5>{{ product.price | currency}}</h5>
+                    <button class="btn btn-primary" v-on:click="addToCart(product)">Add to Cart</button>
+                </div>
+            </div>
+ 
+            <div class="col-md-12 mt-5">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-sm-center">
+                        <li class="page-item">
+                            <button type="button" class="page-link" v-if="page != 1" @click="page--"> Previous </button>
+                        </li>
+                        <li class="page-item" v-for="pageNumber in pages.slice(page-1, page+3)">
+                            <button type="button" class="page-link"  @click="page = pageNumber"> {{pageNumber}} </button>
+                        </li>
+                        <li class="page-item">
+                            <button type="button" @click="page++" v-if="page < pages.length" class="page-link"> Next </button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+                </div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
+     
+        <script type="text/javascript" src="js/app.js"></script>
+  </body>
+</html>
